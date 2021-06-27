@@ -19,6 +19,7 @@ extern const LPCWSTR LOG_FILE = L"il2cpp-log.txt";
  */
 
 static PlayerSetup* CurrentPlayer;
+static PlayerSetup* MyPlayer;
 
 //Since the game is badly optimized old players doesn't get freed so you have to update the local player often
 auto hkPlayerSetup_GrabRPC(PlayerSetup* __this, int32_t _GrabID, Vector3 _GrabPoint, PhotonMessageInfo info,
@@ -26,26 +27,37 @@ auto hkPlayerSetup_GrabRPC(PlayerSetup* __this, int32_t _GrabID, Vector3 _GrabPo
 {
 	//removed check so you can qual everyone even you are dead lmao
 	CurrentPlayer = __this;
+	if (__this->fields.isMine == true)
+	{
+		MyPlayer = __this;
+	}
 }
 
-auto hkPlayerSetup_HitPlayerRPC(PlayerSetup* __this, Vector3 force, int32_t ownerID, PhotonMessageInfo info, MethodInfo* method)
+auto hkPlayerSetup_HitPlayerRPC(PlayerSetup* __this, Vector3 force, int32_t ownerID, PhotonMessageInfo info,
+                                MethodInfo* method)
 {
 	CurrentPlayer = __this;
+	if (__this->fields.isMine == true)
+	{
+		MyPlayer = __this;
+	}
 }
 
 auto hkPlayerSetup_DamageRPC(PlayerSetup* __this, int32_t _killerID, PhotonMessageInfo info, MethodInfo* method)
 {
+	CurrentPlayer = __this;
 	if (__this->fields.isMine == true)
 	{
-		CurrentPlayer = __this;
+		MyPlayer = __this;
 	}
 }
 
 auto hkPlayerSetup_AttackRPC(PlayerSetup* __this, PhotonMessageInfo info, MethodInfo* method)
 {
+	CurrentPlayer = __this;
 	if (__this->fields.isMine == true)
 	{
-		CurrentPlayer = __this;
+		MyPlayer = __this;
 	}
 }
 
@@ -60,31 +72,31 @@ auto pThread()
 	//Rushed af DUH
 	while (true)
 	{
-		if (CurrentPlayer && !IsBadReadPtr(CurrentPlayer))
+		if (MyPlayer && !IsBadReadPtr(MyPlayer))
 		{
-			if (GetAsyncKeyState(VK_OEM_PLUS) && CurrentPlayer->fields.isMine)
+			if (GetAsyncKeyState(VK_OEM_PLUS) && MyPlayer->fields.isMine)
 			{
-				CurrentPlayer->fields.jumpHeight += 100;
-				CurrentPlayer->fields.speed += 100;
+				MyPlayer->fields.jumpHeight += 100;
+				MyPlayer->fields.speed += 100;
 
-				printf("Current speed: %f\n", CurrentPlayer->fields.speed);
-				printf("Current jumpHeight: %f\n", CurrentPlayer->fields.jumpHeight);
+				printf("Current speed: %f\n", MyPlayer->fields.speed);
+				printf("Current jumpHeight: %f\n", MyPlayer->fields.jumpHeight);
 
 				Sleep(300);
 			}
 
-			else if (GetAsyncKeyState(VK_OEM_MINUS) && CurrentPlayer->fields.isMine)
+			else if (GetAsyncKeyState(VK_OEM_MINUS) && MyPlayer->fields.isMine)
 			{
-				CurrentPlayer->fields.jumpHeight -= 100;
-				CurrentPlayer->fields.speed -= 100;
+				MyPlayer->fields.jumpHeight -= 100;
+				MyPlayer->fields.speed -= 100;
 
-				printf("Current speed: %f\n", CurrentPlayer->fields.speed);
-				printf("Current jumpHeight: %f\n", CurrentPlayer->fields.jumpHeight);
+				printf("Current speed: %f\n", MyPlayer->fields.speed);
+				printf("Current jumpHeight: %f\n", MyPlayer->fields.jumpHeight);
 
 				Sleep(300);
 			}
 
-			else if (GetAsyncKeyState(0x30) && CurrentPlayer->fields.isMine) //0 key
+			else if (GetAsyncKeyState(0x30) && MyPlayer->fields.isMine) //0 key
 			{
 				static MethodInfo* FinishMethod;
 
@@ -96,7 +108,7 @@ auto pThread()
 				if (FinishMethod)
 				{
 					printf("Welcome to the finish line!\n");
-					PlayerSetup_Finish(CurrentPlayer, FinishMethod);
+					PlayerSetup_Finish(MyPlayer, FinishMethod);
 				}
 
 				Sleep(300);
@@ -114,7 +126,7 @@ auto pThread()
 				if (FinishMethod)
 				{
 					//Being greedy and always win before everyone c:
-					PlayerSetup_Finish(CurrentPlayer, FinishMethod);
+					if (MyPlayer) PlayerSetup_Finish(MyPlayer, FinishMethod);
 					Sleep(10);
 
 					auto NetworkManager = CurrentPlayer->fields.networkManager;
@@ -142,8 +154,8 @@ auto pThread()
 
 			else if (GetAsyncKeyState(0x38)) //8
 			{
-				CurrentPlayer->fields.knifeMode = !CurrentPlayer->fields.knifeMode;
-				printf("Hammer mode: %s\n", CurrentPlayer->fields.knifeMode ? "true" : "false");
+				MyPlayer->fields.knifeMode = !MyPlayer->fields.knifeMode;
+				printf("Hammer mode: %s\n", MyPlayer->fields.knifeMode ? "true" : "false");
 
 				Sleep(300);
 			}
@@ -167,10 +179,11 @@ void Run()
 	DetoursEasy(PlayerSetup_GrabRPC, hkPlayerSetup_GrabRPC);
 
 	DetoursEasy(PlayerSetup_RagdollRPC, hkPlayerSetup_RagdollRPC);
-	
+
 	DetoursEasy(PlayerSetup_HitPlayerRPC, hkPlayerSetup_HitPlayerRPC);
 
 	DetoursEasy(PlayerSetup_AttackRPC, hkPlayerSetup_AttackRPC);
+
 
 	CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)pThread, nullptr, 0, nullptr);
 }
