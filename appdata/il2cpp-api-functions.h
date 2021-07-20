@@ -111,9 +111,9 @@ DO_API(const PropertyInfo*, il2cpp_class_get_property_from_name, (Il2CppClass * 
 
 DO_API(FieldInfo*, il2cpp_class_get_field_from_name, (Il2CppClass * klass, const char *name));
 
-DO_API(MethodInfo*, il2cpp_class_get_methods, (Il2CppClass * klass, void* *iter));
+DO_API(const MethodInfo*, il2cpp_class_get_methods, (Il2CppClass * klass, void* *iter));
 
-DO_API(MethodInfo*, il2cpp_class_get_method_from_name, (Il2CppClass * klass, const char* name, int argsCount));
+DO_API( MethodInfo*, il2cpp_class_get_method_from_name, (Il2CppClass * klass, const char* name, int argsCount));
 
 DO_API(const char*, il2cpp_class_get_name, (Il2CppClass * klass));
 
@@ -369,9 +369,9 @@ DO_API(const char*, il2cpp_method_get_param_name, (const MethodInfo * method, ui
 
 DO_API(uint32_t, il2cpp_property_get_flags, (PropertyInfo * prop));
 
-DO_API( MethodInfo*, il2cpp_property_get_get_method, (const PropertyInfo * prop));
+DO_API(MethodInfo*, il2cpp_property_get_get_method, (const PropertyInfo * prop));
 
-DO_API (MethodInfo*, il2cpp_property_get_set_method, (const PropertyInfo * prop));
+DO_API(MethodInfo*, il2cpp_property_get_set_method, (const PropertyInfo * prop));
 
 DO_API(const char*, il2cpp_property_get_name, (PropertyInfo * prop));
 
