@@ -369,9 +369,9 @@ DO_API(const char*, il2cpp_method_get_param_name, (const MethodInfo * method, ui
 
 DO_API(uint32_t, il2cpp_property_get_flags, (PropertyInfo * prop));
 
-DO_API(MethodInfo*, il2cpp_property_get_get_method, (const PropertyInfo * prop));
+DO_API( MethodInfo*, il2cpp_property_get_get_method, (PropertyInfo * prop));
 
-DO_API(MethodInfo*, il2cpp_property_get_set_method, (const PropertyInfo * prop));
+DO_API( MethodInfo*, il2cpp_property_get_set_method, (const PropertyInfo * prop));
 
 DO_API(const char*, il2cpp_property_get_name, (PropertyInfo * prop));
 

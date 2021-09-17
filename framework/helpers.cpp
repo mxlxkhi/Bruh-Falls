@@ -95,7 +95,7 @@ MethodInfo* il2cppi_get_method(std::string assembly_name, std::string name_space
 		}
 		else
 		{
-			return il2cpp_property_get_get_method(prop);
+			return il2cpp_property_get_get_method((PropertyInfo*)prop);
 		}
 	}
 	else
