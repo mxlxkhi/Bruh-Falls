@@ -18,3 +18,7 @@
 <br>
 
 - The game has no AC so you can use whatever injector you like lmao, the game is also full of exploits and has no server sided checks on 90% of the stuff so, BE CREATIVE AND FEEL FREE TO PR THE REPO!.
+
+- READ BELOW
+
+- Tbh i dont remember doing this so its outdated. 
